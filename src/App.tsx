@@ -1,26 +1,16 @@
 import React from 'react';
-import {View, Text, StyleSheet, StatusBar} from 'react-native';
+import {StatusBar} from 'react-native';
+import {NavigationContainer} from '@react-navigation/native';
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#312e38',
-  },
-  text: {
-    color: '#fff',
-    fontSize: 36,
-  },
-});
+import {AuthRoutes} from './routes';
 
 const App: React.FC = () => {
   return (
     <>
-      <StatusBar barStyle="light-content" backgroundColor="#312e38" />
-      <View style={styles.container}>
-        <Text style={styles.text}>Hello Gostack</Text>
-      </View>
+      <NavigationContainer>
+        <StatusBar barStyle="light-content" backgroundColor="#312e38" />
+        <AuthRoutes />
+      </NavigationContainer>
     </>
   );
 };

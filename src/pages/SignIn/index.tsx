@@ -1,24 +1,23 @@
 import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#312e38',
-  },
-  text: {
-    color: '#fff',
-    fontSize: 36,
-  },
-});
+import logoImg from '../../assets/logo.png';
+
+import Input from '../../components/Input';
+import Button from '../../components/Button';
+
+import {Container, Logo, Title} from './styles';
 
 const SignIn: React.FC = () => {
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>SignIn</Text>
-    </View>
+    <Container>
+      <Logo source={logoImg} />
+      <Title>Faça seu logon</Title>
+
+      <Input name="email" placeholder="E-mail" icon="mail" />
+      <Input name="password" placeholder="Senha" icon="lock" />
+
+      <Button onPress={() => console.log('Nice!!')}>Entrar</Button>
+    </Container>
   );
 };
 
