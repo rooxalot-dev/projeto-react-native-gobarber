@@ -1,5 +1,5 @@
 import styled from 'styled-components/native';
-import {TouchableOpacity} from 'react-native';
+import {TouchableOpacity, StyleSheet} from 'react-native';
 
 export const Container = styled.View`
   flex: 1;
@@ -40,7 +40,7 @@ export const CreateAccountButton = styled(TouchableOpacity)`
   justify-content: center;
   align-items: center;
   background-color: #312e38;
-  border-top-width: 1px;
+  border-top-width: ${StyleSheet.hairlineWidth}px;
   border-top-color: #232129;
 `;
 
