@@ -12,6 +12,7 @@ import {FormHandles} from '@unform/core';
 import {Form} from '@unform/mobile';
 import * as Yup from 'yup';
 
+import api from '../../services/api';
 import getValidationErrors from '../../utils/getValidationErrors';
 
 import Input from '../../components/Input';
@@ -33,45 +34,68 @@ interface SignUpFormData {
   password: string;
 }
 
+interface CreatedUuser {
+  name: string;
+  email: string;
+}
+
 const SignUp: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
   const navigation = useNavigation();
 
-  const handleSubmit = useCallback(async (data: SignUpFormData) => {
-    formRef.current && formRef.current.setErrors({});
+  const handleSubmit = useCallback(
+    async (data: SignUpFormData) => {
+      formRef.current && formRef.current.setErrors({});
 
-    const schema = Yup.object().shape({
-      name: Yup.string().required('Nome é obrigatório!'),
-      email: Yup.string()
-        .email('Digite um e-mail válido')
-        .required('E-mail é obrigatório!'),
-      password: Yup.string().min(
-        6,
-        'Senha deve possuir pelo menos 6 caracteres!',
-      ),
-    });
-
-    try {
-      const validData = await schema.validate(data, {
-        abortEarly: false,
+      const schema = Yup.object().shape({
+        name: Yup.string().required('Nome é obrigatório!'),
+        email: Yup.string()
+          .email('Digite um e-mail válido')
+          .required('E-mail é obrigatório!'),
+        password: Yup.string().min(
+          6,
+          'Senha deve possuir pelo menos 6 caracteres!',
+        ),
       });
-    } catch (error) {
-      if (error instanceof Yup.ValidationError) {
-        const errors = getValidationErrors(error);
-        if (formRef && formRef.current) {
-          formRef.current.setErrors(errors);
-          return;
-        }
-      }
 
-      Alert.alert(
-        'Ocorreu um erro!',
-        'Não foi possível realizar seu cadastro. Tente novamente!',
-        undefined,
-        {cancelable: true},
-      );
-    }
-  }, []);
+      try {
+        const validData = await schema.validate(data, {
+          abortEarly: false,
+        });
+
+        const {data: user} = await api.post<CreatedUuser>('/users', validData);
+
+        Alert.alert(
+          `Cadastro do usuário ${user.name} realizado com sucesso!`,
+          'Você será redirecionado para o logon!',
+          [
+            {
+              text: 'OK',
+              style: 'default',
+              onPress: () => navigation.navigate('SignIn'),
+            },
+          ],
+          undefined,
+        );
+      } catch (error) {
+        if (error instanceof Yup.ValidationError) {
+          const errors = getValidationErrors(error);
+          if (formRef && formRef.current) {
+            formRef.current.setErrors(errors);
+            return;
+          }
+        }
+
+        Alert.alert(
+          'Ocorreu um erro!',
+          'Não foi possível realizar seu cadastro. Tente novamente!',
+          undefined,
+          {cancelable: true},
+        );
+      }
+    },
+    [navigation],
+  );
 
   return (
     <>
