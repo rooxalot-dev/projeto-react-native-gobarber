@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect, useRef, useCallback} from 'react';
 import {TextInputProperties, TextInput as RNTextInput} from 'react-native';
 import {useField} from '@unform/core';
 import Icon from 'react-native-vector-icons/Feather';
@@ -21,6 +21,15 @@ const Input: React.FC<InputProps> = ({name, icon, ...inputProps}) => {
   const {fieldName, defaultValue = '', registerField} = useField(name);
   const inputValueRef = useRef<InputValueReference>({value: defaultValue});
   const inputTextRef = useRef<RNTextInput>(null);
+
+  const handleInputFocus = useCallback(() => {
+    setHasFocus(true);
+  }, []);
+
+  const handleInputBlur = useCallback(() => {
+    setHasFocus(false);
+    setIsFilled(!!inputValueRef.current.value);
+  }, []);
 
   useEffect(() => {
     registerField<string>({
@@ -48,8 +57,8 @@ const Input: React.FC<InputProps> = ({name, icon, ...inputProps}) => {
         ref={inputTextRef}
         placeholderTextColor="#666360"
         keyboardAppearance="dark"
-        onFocus={() => setHasFocus(true)}
-        onBlur={() => setHasFocus(false)}
+        onFocus={handleInputFocus}
+        onBlur={handleInputBlur}
         onChangeText={(text) => {
           setIsFilled(!!text);
           inputValueRef.current.value = text;
