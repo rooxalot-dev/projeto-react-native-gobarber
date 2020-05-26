@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef} from 'react';
 import {TextInputProperties, TextInput as RNTextInput} from 'react-native';
 import {useField} from '@unform/core';
 import Icon from 'react-native-vector-icons/Feather';

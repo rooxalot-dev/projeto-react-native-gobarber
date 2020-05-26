@@ -46,12 +46,23 @@ const SignIn: React.FC = () => {
             </View>
 
             <Form ref={formRef} onSubmit={handleSubmit}>
-              <Input name="email" placeholder="E-mail" icon="mail" />
+              <Input
+                name="email"
+                placeholder="E-mail"
+                icon="mail"
+                keyboardType="email-address"
+                autoCorrect={false}
+                autoCapitalize="none"
+              />
               <Input
                 name="password"
                 placeholder="Senha"
-                secureTextEntry
                 icon="lock"
+                secureTextEntry
+                returnKeyType="send"
+                onSubmitEditing={() => {
+                  formRef.current && formRef.current.submitForm();
+                }}
               />
 
               <Button
