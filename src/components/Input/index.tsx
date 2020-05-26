@@ -1,9 +1,9 @@
-import React, {useEffect, useRef} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {TextInputProperties, TextInput as RNTextInput} from 'react-native';
 import {useField} from '@unform/core';
 import Icon from 'react-native-vector-icons/Feather';
 
-import {Container, TextInput} from './styles';
+import {Container, TextInput, InputIcon} from './styles';
 
 interface InputProps extends TextInputProperties {
   name: string;
@@ -15,6 +15,9 @@ interface InputValueReference {
 }
 
 const Input: React.FC<InputProps> = ({name, icon, ...inputProps}) => {
+  const [hasFocus, setHasFocus] = useState(false);
+  const [isFilled, setIsFilled] = useState(false);
+
   const {fieldName, defaultValue = '', registerField} = useField(name);
   const inputValueRef = useRef<InputValueReference>({value: defaultValue});
   const inputTextRef = useRef<RNTextInput>(null);
@@ -37,15 +40,18 @@ const Input: React.FC<InputProps> = ({name, icon, ...inputProps}) => {
   }, [fieldName, registerField]);
 
   return (
-    <Container>
+    <Container hasFocus={hasFocus}>
       {icon && (
-        <Icon name={icon} size={24} color="#666360" style={{marginRight: 10}} />
+        <InputIcon name={icon} size={24} isFilled={isFilled || hasFocus} />
       )}
       <TextInput
         ref={inputTextRef}
         placeholderTextColor="#666360"
         keyboardAppearance="dark"
+        onFocus={() => setHasFocus(true)}
+        onBlur={() => setHasFocus(false)}
         onChangeText={(text) => {
+          setIsFilled(!!text);
           inputValueRef.current.value = text;
         }}
         {...inputProps}
