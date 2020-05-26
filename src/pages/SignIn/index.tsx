@@ -36,7 +36,7 @@ const SignIn: React.FC = () => {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <ScrollView
-          contentContainerStyle={{flex: 1}}
+          contentContainerStyle={{flexGrow: 1}}
           keyboardShouldPersistTaps="handled"
         >
           <Container>
