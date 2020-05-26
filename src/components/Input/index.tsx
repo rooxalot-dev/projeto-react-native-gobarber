@@ -1,7 +1,11 @@
 import React, {useState, useEffect, useRef, useCallback} from 'react';
-import {TextInputProperties, TextInput as RNTextInput} from 'react-native';
-import {useField} from '@unform/core';
+import {
+  TextInputProperties,
+  TextInput as RNTextInput,
+  Alert,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
+import {useField} from '@unform/core';
 
 import {Container, TextInput, InputIcon} from './styles';
 
@@ -18,7 +22,7 @@ const Input: React.FC<InputProps> = ({name, icon, ...inputProps}) => {
   const [hasFocus, setHasFocus] = useState(false);
   const [isFilled, setIsFilled] = useState(false);
 
-  const {fieldName, defaultValue = '', registerField} = useField(name);
+  const {fieldName, defaultValue = '', error, registerField} = useField(name);
   const inputValueRef = useRef<InputValueReference>({value: defaultValue});
   const inputTextRef = useRef<RNTextInput>(null);
 
@@ -30,6 +34,10 @@ const Input: React.FC<InputProps> = ({name, icon, ...inputProps}) => {
     setHasFocus(false);
     setIsFilled(!!inputValueRef.current.value);
   }, []);
+
+  const handleErrorIconPress = useCallback(() => {
+    Alert.alert('Detalhes do erro', error, undefined, {cancelable: true});
+  }, [error]);
 
   useEffect(() => {
     registerField<string>({
@@ -49,7 +57,7 @@ const Input: React.FC<InputProps> = ({name, icon, ...inputProps}) => {
   }, [fieldName, registerField]);
 
   return (
-    <Container hasFocus={hasFocus}>
+    <Container hasFocus={hasFocus} hasError={!!error}>
       {icon && (
         <InputIcon name={icon} size={24} isFilled={isFilled || hasFocus} />
       )}
@@ -65,6 +73,15 @@ const Input: React.FC<InputProps> = ({name, icon, ...inputProps}) => {
         }}
         {...inputProps}
       />
+
+      {!!error && (
+        <Icon
+          onPress={handleErrorIconPress}
+          name="alert-circle"
+          size={20}
+          color="#c53030"
+        />
+      )}
     </Container>
   );
 };

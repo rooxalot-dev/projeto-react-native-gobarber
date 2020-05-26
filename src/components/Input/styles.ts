@@ -3,6 +3,7 @@ import Icon from 'react-native-vector-icons/Feather';
 
 interface ContainerProps {
   hasFocus: boolean;
+  hasError: boolean;
 }
 
 interface InputIconProps {
@@ -19,7 +20,19 @@ export const Container = styled.View<ContainerProps>`
   border-radius: 10px;
   background-color: #232129;
   border-width: 2px;
-  border-color: ${({hasFocus}) => (hasFocus ? '#ff9000' : '#232129')};
+  border-color: #232129;
+
+  ${(props) =>
+    props.hasError &&
+    css`
+      border-color: #c53030;
+    `}
+
+  ${(props) =>
+    props.hasFocus &&
+    css`
+      border-color: #ff9000;
+    `}
 `;
 
 export const TextInput = styled.TextInput`

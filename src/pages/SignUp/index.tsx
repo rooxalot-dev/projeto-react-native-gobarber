@@ -1,10 +1,18 @@
 import React, {useRef, useCallback} from 'react';
-import {View, ScrollView, KeyboardAvoidingView, Platform} from 'react-native';
+import {
+  View,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+  Alert,
+} from 'react-native';
 import {useNavigation} from '@react-navigation/core';
 import Icon from 'react-native-vector-icons/Feather';
-
 import {FormHandles} from '@unform/core';
 import {Form} from '@unform/mobile';
+import * as Yup from 'yup';
+
+import getValidationErrors from '../../utils/getValidationErrors';
 
 import Input from '../../components/Input';
 import Button from '../../components/Button';
@@ -19,12 +27,50 @@ import {
   BackToLogonButtonText,
 } from './styles';
 
+interface SignUpFormData {
+  name: string;
+  email: string;
+  password: string;
+}
+
 const SignUp: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
   const navigation = useNavigation();
 
-  const handleSubmit = useCallback((data: any) => {
-    console.log('Form Data: ', data);
+  const handleSubmit = useCallback(async (data: SignUpFormData) => {
+    formRef.current && formRef.current.setErrors({});
+
+    const schema = Yup.object().shape({
+      name: Yup.string().required('Nome é obrigatório!'),
+      email: Yup.string()
+        .email('Digite um e-mail válido')
+        .required('E-mail é obrigatório!'),
+      password: Yup.string().min(
+        6,
+        'Senha deve possuir pelo menos 6 caracteres!',
+      ),
+    });
+
+    try {
+      const validData = await schema.validate(data, {
+        abortEarly: false,
+      });
+    } catch (error) {
+      if (error instanceof Yup.ValidationError) {
+        const errors = getValidationErrors(error);
+        if (formRef && formRef.current) {
+          formRef.current.setErrors(errors);
+          return;
+        }
+      }
+
+      Alert.alert(
+        'Ocorreu um erro!',
+        'Não foi possível realizar seu cadastro. Tente novamente!',
+        undefined,
+        {cancelable: true},
+      );
+    }
   }, []);
 
   return (
