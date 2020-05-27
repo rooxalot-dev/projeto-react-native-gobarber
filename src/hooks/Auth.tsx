@@ -12,6 +12,7 @@ import api from '../services/api';
 interface AuthContextData {
   user: any;
 
+  loadingUserData: boolean;
   signIn(signInData: SignInCredentials): Promise<void>;
   signOut(): void;
 }
@@ -33,9 +34,12 @@ const AuthProvider: React.FC = ({children}) => {
   const LS_USER_KEY = '@GoBarber:user';
 
   const [data, setData] = useState<AuthState>({} as AuthState);
+  const [loadingUserData, setLoadingUserData] = useState(true);
 
   useEffect(() => {
     const loadState = async () => {
+      setLoadingUserData(true);
+
       const [token, user] = await asyncStorage.multiGet([
         LS_TOKEN_KEY,
         LS_USER_KEY,
@@ -47,6 +51,8 @@ const AuthProvider: React.FC = ({children}) => {
           user: JSON.parse(user[1]),
         });
       }
+
+      setLoadingUserData(false);
     };
 
     loadState();
@@ -70,10 +76,13 @@ const AuthProvider: React.FC = ({children}) => {
 
   const signOut = useCallback(async () => {
     await asyncStorage.multiRemove([LS_TOKEN_KEY, LS_USER_KEY]);
+    setData({} as AuthState);
   }, []);
 
   return (
-    <AuthContext.Provider value={{user: data.user, signIn, signOut}}>
+    <AuthContext.Provider
+      value={{user: data.user, loadingUserData, signIn, signOut}}
+    >
       {children}
     </AuthContext.Provider>
   );
